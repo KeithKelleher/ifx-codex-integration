@@ -4,7 +4,6 @@ Small local proxy that forwards Codex/OpenAI-style requests to Azure OpenAI usin
 
 ## Why?
 - We (at NCATS IFX) have a local deployment of Azure OpenAI that we use for development and testing.
-- Codex works with MS Foundry, but only if you provide a stable API key
 - Codex only works with MS Foundry given an API key, not Azure Entra ID :(
 - This works around that by using a local proxy to inject the API key and adjusting the headers.
 - It's lame, but it works for now.
@@ -23,6 +22,20 @@ Small local proxy that forwards Codex/OpenAI-style requests to Azure OpenAI usin
 - `curl`
 - Azure service principal credentials (`TENANT_ID`, `CLIENT_ID`, `CLIENT_SECRET`)
 
+## Install Codex (macOS)
+
+If you are on macOS, you can install Codex with Homebrew:
+
+```bash
+brew install codex
+```
+
+Verify installation:
+
+```bash
+codex --version
+```
+
 ## Setup steps
 
 ### Step 1: Install dependencies
@@ -39,7 +52,7 @@ Make scripts executable:
 chmod +x proxy.sh codex.sh
 ```
 
-### Step 2: Set Azure credentials in your shell
+### Step 2: Set Azure credentials in your shell - do one of these, depending on your shell
 
 #### zsh (`~/.zshrc`)
 
@@ -127,6 +140,24 @@ Terminal 2 (Codex):
 ./codex.sh
 ```
 
+## Run from another repo
+
+If your working repo is next to this one (for example `../ifx-codex-integration`), run the proxy from this repo and run Codex from the other repo.
+
+Proxy Terminal:
+
+```bash
+../ifx-codex-integration/proxy.sh
+```
+
+Codex Terminal:
+
+```bash
+../ifx-codex-integration/codex.sh
+```
+
+This uses the helper script in the other repo to load the shared token setup, then starts Codex in that repo context.
+
 ## Environment variables
 
 Used by `proxy.sh` and `codex.sh`:
@@ -138,7 +169,7 @@ Runtime token sharing:
 
 - `proxy.sh` fetches a bearer token and writes it to `.codex-token`
 - `codex.sh` reads `.codex-token` to set `AZURE_OPENAI_API_KEY`
-- Override token file path with `CODEX_TOKEN_FILE`
+- Optionally, override the token file path with `CODEX_TOKEN_FILE`
 
 Used by `proxy.py`:
 
