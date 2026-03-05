@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TOKEN_FILE="${CODEX_TOKEN_FILE:-${SCRIPT_DIR}/.codex-token}"
+
 : "${TENANT_ID:?TENANT_ID is not set}"
 : "${CLIENT_ID:?CLIENT_ID is not set}"
 : "${CLIENT_SECRET:?CLIENT_SECRET is not set}"
@@ -11,7 +14,6 @@ SCOPE="https://cognitiveservices.azure.com/.default"
 PROXY_HOST="127.0.0.1"
 PROXY_PORT="${PROXY_PORT:-8000}"
 UVICORN_LOG_LEVEL="${UVICORN_LOG_LEVEL:-warning}"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 ensure_commands() {
   local missing=()
@@ -58,9 +60,13 @@ print(token)
 
 echo "Requesting Azure access token..."
 ensure_commands
-export AZURE_OPENAI_API_KEY="$(get_access_token)"
+AZURE_OPENAI_API_KEY="$(get_access_token)"
+export AZURE_OPENAI_API_KEY
+
+umask 077
+printf '%s\n' "$AZURE_OPENAI_API_KEY" > "$TOKEN_FILE"
 
 echo "Token acquired."
+echo "Token written to ${TOKEN_FILE}."
 echo "Starting local Azure auth proxy on ${PROXY_HOST}:${PROXY_PORT}..."
 uvicorn proxy:app --app-dir "$SCRIPT_DIR" --host "$PROXY_HOST" --port "$PROXY_PORT" --log-level "$UVICORN_LOG_LEVEL"
-

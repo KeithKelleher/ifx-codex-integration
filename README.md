@@ -39,7 +39,9 @@ Make scripts executable:
 chmod +x proxy.sh codex.sh
 ```
 
-### Step 2: Set Azure credentials in zsh
+### Step 2: Set Azure credentials in your shell
+
+#### zsh (`~/.zshrc`)
 
 Add these to `~/.zshrc`:
 
@@ -53,6 +55,38 @@ Restart your terminal, or apply immediately with this command:
 
 ```bash
 source ~/.zshrc
+```
+
+#### bash (`~/.bashrc` or `~/.bash_profile`)
+
+Add these to your bash startup file:
+
+```bash
+export TENANT_ID="your-tenant-id"
+export CLIENT_ID="your-client-id"
+export CLIENT_SECRET="your-client-secret"
+```
+
+Apply with:
+
+```bash
+source ~/.bashrc
+```
+
+#### fish (`~/.config/fish/config.fish`)
+
+Add these to `~/.config/fish/config.fish`:
+
+```fish
+set -x TENANT_ID "your-tenant-id"
+set -x CLIENT_ID "your-client-id"
+set -x CLIENT_SECRET "your-client-secret"
+```
+
+Apply with:
+
+```fish
+source ~/.config/fish/config.fish
 ```
 
 Verify values are present:
@@ -99,6 +133,12 @@ Used by `proxy.sh` and `codex.sh`:
 - `TENANT_ID` (required)
 - `CLIENT_ID` (required)
 - `CLIENT_SECRET` (required)
+
+Runtime token sharing:
+
+- `proxy.sh` fetches a bearer token and writes it to `.codex-token`
+- `codex.sh` reads `.codex-token` to set `AZURE_OPENAI_API_KEY`
+- Override token file path with `CODEX_TOKEN_FILE`
 
 Used by `proxy.py`:
 
