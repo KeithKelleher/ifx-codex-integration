@@ -1,0 +1,9 @@
+proxy.log
+.env
+secrets/
+.venv/
+__pycache__/
+*.pyc
+.idea/
+.DS_Store
+.codex
